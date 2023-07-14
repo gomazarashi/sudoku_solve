@@ -14,32 +14,16 @@ def read_sudoku(filename):
 def find_blank_cell_by_initial_state(sudoku):
     return(list(zip(*np.where(sudoku == 0))))
 
-# セルの座標を受け取り、そのセルの数字が同じ行の他の数字と被っていないか判定する関数 被っていなければTrue
+# セルの座標を受け取り、そのセルの数字が同じ行/列/ブロックの他の数字と被っていないか判定する関数 被っていなければTrue
 
 
-def check_cell_row(sudoku, cell, written_number):
-    if written_number in sudoku[cell[0]]:
-        return False
-    else:
+def check_cell(sudoku, cell, written_number):
+    if (written_number not in sudoku[cell[0]]) \
+        and (written_number not in sudoku[:, cell[1]]) \
+            and (written_number not in sudoku[cell[0]//3*3:cell[0]//3*3+3, cell[1]//3*3:cell[1]//3*3+3]):
         return True
-
-# セルの座標を受け取り、そのセルの数字が同じ列の他の数字と被っていないか判定する関数 被っていなければTrue
-
-
-def check_cell_column(sudoku, cell, written_number):
-    if written_number in sudoku[:, cell[1]]:
-        return False
     else:
-        return True
-
-# セルの座標を受け取り、そのセルの数字が3x3のブロックの他の数字と被っていないか判定する関数 被っていなければTrue
-
-
-def check_cell_block(sudoku, cell, written_number):
-    if written_number in sudoku[cell[0]//3*3:cell[0]//3*3+3, cell[1]//3*3:cell[1]//3*3+3]:
         return False
-    else:
-        return True
 
 # バックトラックを用いて数独を解く関数
 
@@ -47,7 +31,6 @@ def check_cell_block(sudoku, cell, written_number):
 def solve_sudoku(sudoku, unsolved_cells_tf):
     for unsolved_cell in unsolved_cells_tf:
         written_number = sudoku[unsolved_cell[0]]+1
-        
 
 
 # メイン関数
