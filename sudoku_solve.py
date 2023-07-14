@@ -25,23 +25,43 @@ def check_cell(sudoku, cell, written_number):
     else:
         return False
 
-# バックトラックを用いて数独を解く関数
+# 総当たりを行い、セルに書き込める数字を探す関数
 
+def solve_sudoku_brute_force(sudoku, unsolved_cells_tf):
+    if len(unsolved_cells_tf) == 0:
+        # すべてのセルが解決済みならば、数独パズルを表示して終了
+        print(sudoku)
+        return True
 
-def solve_sudoku(sudoku, unsolved_cells_tf):
-    for unsolved_cell in unsolved_cells_tf:
-        written_number = sudoku[unsolved_cell[0]]+1
+    # 未解決のセルのリストから次のセルを選択
+    cell = unsolved_cells_tf[0]
+    row, col = cell
+
+    for num in range(1, 10):
+        if check_cell(sudoku, cell, num):
+            # セルに数字を書き込む
+            sudoku[row, col] = num
+
+            # 次の未解決のセルを解く
+            if solve_sudoku_brute_force(sudoku, unsolved_cells_tf[1:]):
+                return True
+
+            # 解が見つからない場合、セルの数字をリセット
+            sudoku[row, col] = 0
+
+    return False
+
 
 
 # メイン関数
 def main():
     sudoku = read_sudoku("sudoku_sample.csv")
     print(sudoku)
-    unsolved_cells_tf = [[cell, True] for cell in list(find_blank_cell_by_initial_state(sudoku))]  # まだ解かれていないセルのリスト
+    unsolved_cells_tf =find_blank_cell_by_initial_state(sudoku)  # まだ解かれていないセルのリスト
     if len(unsolved_cells_tf) == 0:
         print("この数独には空白のセルがありません")
         return
-    solve_sudoku(sudoku, unsolved_cells_tf)
+    solve_sudoku_brute_force(sudoku, unsolved_cells_tf)
 
 
 if __name__ == '__main__':
